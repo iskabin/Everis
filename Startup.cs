@@ -56,6 +56,14 @@ namespace Everis
             app.UseStaticFiles();
             app.UseCookiePolicy();
 
+            var serviceScope = app.ApplicationServices.CreateScope();
+            var context = serviceScope.ServiceProvider.GetService<ProductsContext>();
+            if (context.Database.GetPendingMigrations().Count() > 0)
+            {
+                context.Database.Migrate();
+            }
+            serviceScope.Dispose();
+
             app.UseMvc(routes =>
             {
                 routes.MapRoute(

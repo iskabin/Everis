@@ -13,7 +13,7 @@ namespace Everis.Data
         {
         }
 
-        public ProductsContext(DbContextOptions<ProductsContext> options) : base(options) { }
+        public ProductsContext(DbContextOptions<ProductsContext> options) : base(options) { }        
 
         public DbSet<Product> Products { get; set; }
         public DbSet<SpreadsheetEntry> SpreadsheetEntries { get; set; }

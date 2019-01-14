@@ -25,7 +25,7 @@ namespace Everis.Controllers
         private IHostingEnvironment _hostingEnvironment;
 
         public ProductsController(ProductsContext context, IHostingEnvironment hostingEnvironment)
-        {
+        {          
             _context = context;
             _hostingEnvironment = hostingEnvironment;
         }
@@ -57,7 +57,9 @@ namespace Everis.Controllers
         {
             if (!ModelState.IsValid)
             {
-                return View("Form", product);
+                if (!(ModelState.ErrorCount == 1 && ModelState.Any(item => item.Key == "ID"))) {
+                    return View("Form", product);
+                }           
             }
 
             if (product.ID == 0)
@@ -76,6 +78,30 @@ namespace Everis.Controllers
             _context.SaveChanges();
 
             return RedirectToAction("Index", "Products");
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult Save(Product product)
+        {
+            if (!ModelState.IsValid)
+            {
+                if (!(ModelState.ErrorCount == 1 && ModelState.Any(item => item.Key == "ID")))
+                {
+                    return View("New", product);
+                }
+            }
+
+            if (product.ID == 0)
+            {
+                product.AddType = AddType.Formulário;
+                product.DateAdded = DateTime.Now;
+                _context.Products.Add(product);
+
+                return RedirectToAction("Index", "Products");
+            } 
+
+            return View("New", product);
         }
 
         [HttpPost]
@@ -166,23 +192,6 @@ namespace Everis.Controllers
             return View("SearchResults", products);
         }
 
-        [Route("products/code/{code}")]
-        public IActionResult ByCode(int code)
-        {
-            return Content(code.ToString());
-        }
-
-        [Route("products/company/{company}")]
-        public IActionResult ByCompany(string company)
-        {
-            return Content(company);
-        }
-
-        public IActionResult New()
-        {
-            return View();
-        }
-
         public IActionResult Form(int id)
         {
             var product = _context.Products.SingleOrDefault(p => p.ID == id);
@@ -208,16 +217,6 @@ namespace Everis.Controllers
         public IActionResult Spreadsheet()
         {
             return View();
-        }
-
-        public IActionResult Edit(int id)
-        {
-            var product = _context.Products.SingleOrDefault(p => p.ID == id);
-
-            if (product == null)
-                return StatusCode(404);
-
-            return View(product);
         }
 
         [HttpDelete]
@@ -246,10 +245,10 @@ namespace Everis.Controllers
 
             return View(product);
         }
-        
+
         [HttpPost]
-        [Route("/importToDb/{title}")]
-        public IActionResult ImportToDb(string title)
+        [Route("/importToDb")]
+        public IActionResult ImportToDb([FromQuery] string title)
         {
             //TODO: colocar dentro de um foreach para ler varios arquivos de uma vez
             IFormFile file = Request.Form.Files[0];

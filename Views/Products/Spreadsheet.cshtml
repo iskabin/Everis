@@ -57,7 +57,7 @@
                 fdata.append(files[0].name, files[0]);
                 $.ajax({
                     type: "POST",
-                    url: "/importToDb/" + title,
+                    url: "/importToDb?title=" + title,
                     beforeSend: function (xhr) {
                         xhr.setRequestHeader("XSRF-TOKEN",
                             $('input:hidden[name="__RequestVerificationToken"]').val());

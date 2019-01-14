@@ -39,14 +39,14 @@ namespace Everis.Models
         [Range(0, int.MaxValue, ErrorMessage = "A estoque deve ser um inteiro positivo!")]
         public int Stock { get; set; }
 
-        [Required]
+        //[Required]
         public DateTime DateAdded { get; set; }
 
         public DateTime LastEdit { get; set; }
 
         public AddType EditType { get; set; }
 
-        [Required]
+        //[Required]
         public AddType AddType { get; set; }
 
         public SpreadsheetEntry SpreadsheetId { get; set; }
