@@ -1,0 +1,82 @@
+﻿
+@{
+    ViewData["Title"] = "Spreadsheet";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Adicionar planilha de entrada</h2>
+
+<form method="post" enctype="multipart/form-data">
+    <label style="margin-top: 15px" for="spreadsheetName">Título</label>
+    <div class="row">
+        <div class="col-md-4">
+            <input type="text" id="spreadsheetName" class="form-control" />
+        </div>
+    </div>
+    <label style="margin-top: 15px" for="files">Planilha</label>
+    <div class="row">
+        <div class="col-md-4">
+            <input type="file" id="fUpload" name="files" class="form-control" />
+        </div>
+        <div class="col-md-8">
+            <input type="button" id="btnUpload" class="btn btn-primary" value="Upload" />
+        </div>
+    </div>
+    <br />
+    <div id="dvData"></div>
+</form>
+
+@section Scripts{
+    <environment include="Development">
+        <script src="~/lib/bootbox/bootbox.min.js"></script>
+    </environment>
+
+    <environment exclude="Development">
+        <script src="~/lib/bootbox/bootbox.min.js"></script>
+    </environment>
+    <script>
+        $(document).ready(function () {
+            $('#btnUpload').on('click', function () {
+                var fileExtension = ['xls', 'xlsx'];
+                var filename = $('#fUpload').val();
+                if (filename.length === 0) {
+                    bootbox.alert("Escolha um arquivo xls ou xlsx.");
+                    return false;
+                }
+                else {
+                    var extension = filename.replace(/^.*\./, '');
+                    if ($.inArray(extension, fileExtension) === -1) {
+                        bootbox.alert("Escolha apenas arquivos do Excel.");
+                        return false;
+                    }
+                }
+                var fdata = new FormData();
+                var fileUpload = $("#fUpload").get(0);
+                var files = fileUpload.files;
+                var title = $('#spreadsheetName').val();
+                fdata.append(files[0].name, files[0]);
+                $.ajax({
+                    type: "POST",
+                    url: "/importToDb/" + title,
+                    beforeSend: function (xhr) {
+                        xhr.setRequestHeader("XSRF-TOKEN",
+                            $('input:hidden[name="__RequestVerificationToken"]').val());
+                    },
+                    data: fdata,
+                    contentType: false,
+                    processData: false,
+                    success: function (response) {
+                        if (response.length === 0)
+                            bootbox.alert('Ocorreu um erro durante o Upload');
+                        else {
+                            $('#dvData').html(response);
+                        }
+                    },
+                    error: function (e) {
+                        $('#dvData').html(e.responseText);
+                    },
+                });
+            })
+        });
+    </script>
+}

@@ -1,0 +1,110 @@
+﻿@model Everis.ViewModels.SpreadsheetsViewModel
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Histórico de inconsistências</h2>
+
+@if (Model.Inconsistencies.Count == 0)
+{
+    <p>Não ocorreram inconsistências.</p>
+}
+else
+{
+    <table id="inconsistenciesTable" class="table table-bordered table-hover">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Tipo de inconsistência</th>
+                <th>Planilha</th>
+                <th>Data da Planilha</th>
+                <th>Data de Upload</th>
+                <th>Coluna</th>
+                <th>Linha</th>
+                <th>Atributo</th>
+                <th>Valor lido</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var inconsistency in Model.Inconsistencies)
+            {
+                var spreadsheet = Model.Spreadsheets.Where(s => s == inconsistency.SpreadsheetID).FirstOrDefault();
+
+            <tr>
+                <td>@inconsistency.ID</td>
+                <td>
+                    @switch (inconsistency.Type)
+                    {
+                        case InconsistencyType.MissingAttributeOnSheet:
+                    <p>Atributo não encontrado</p>; break;
+                        case InconsistencyType.MissingDataOnCell:
+                    <p>Dado não encontrado</p>; break;
+                        case InconsistencyType.WrongDataTypeOnCell:
+                    <p>Tipo de dado errado</p>; break;
+                    }
+                </td>
+                <td>
+                    @{ if (spreadsheet != null)
+                        {
+                            if (spreadsheet.Title == null)
+                            {
+                                @Html.ActionLink("Sem Título", "Details", "Spreadsheets", new { id = spreadsheet.ID })
+                            }
+                            else
+                            {
+                                @Html.ActionLink(spreadsheet.Title, "Details", "Spreadsheets", new { id = spreadsheet.ID })                                
+                            }
+                        }
+                        else
+                        {
+                            <p>Sem Título</p>
+                        }
+                    }
+                </td>
+                <td>@spreadsheet.ReferenceDate</td>
+                <td>@spreadsheet.DateAdded</td>
+                <td>@inconsistency.Collumn</td>
+                <td>@inconsistency.Row</td>
+                <td>@switch (inconsistency.Attribute) {
+                            case InconsistentAttribute.Code:
+                        <p>Código</p>; break;
+                            case InconsistentAttribute.Company:
+                        <p>Empresa</p>; break;
+                            case InconsistentAttribute.Date:
+                        <p>Data</p>; break;
+                            case InconsistentAttribute.Income:
+                        <p>Entrada</p>; break;
+                            case InconsistentAttribute.Name:
+                        <p>Nome</p>; break;
+                            case InconsistentAttribute.Outcome:
+                        <p>Saída</p>; break;
+                            case InconsistentAttribute.Stock:
+                        <p>Estoque</p>; break;
+                        }
+                </td>
+                <td>@inconsistency.CellValue</td>
+            </tr>
+            }
+        </tbody>
+    </table>
+}
+
+                @section Scripts{
+    <environment include="Development">
+        <script src="~/lib/datatables/js/jquery.dataTables.js"></script>
+        <script src="~/lib/datatables/js/dataTables.bootstrap.js"></script>
+        <link rel="stylesheet" href="~/lib/datatables/css/dataTables.bootstrap.css">
+    </environment>
+
+    <environment exclude="Development">
+        <script src="~/lib/datatables/js/jquery.dataTables.js"></script>
+        <script src="~/lib/datatables/js/dataTables.bootstrap.js"></script>
+        <link rel="stylesheet" href="~/lib/datatables/css/dataTables.bootstrap.css">
+    </environment>
+    <script>
+                        $(document).ready(function () {
+            $("#inconsistenciesTable").DataTable();
+                    });
+    </script>
+                }

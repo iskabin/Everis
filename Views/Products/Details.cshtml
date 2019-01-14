@@ -1,0 +1,46 @@
+﻿@model Product
+@{
+    ViewData["Title"] = "Details";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>@Model.Name</h2>
+
+<p>Código: @Model.Code</p>
+<p>Empresa: @Model.Company</p>
+<p>Entrada: @Model.Income</p>
+<p>Saída: @Model.Outcome</p>
+<p>Estoque: @Model.Stock</p>
+<p>Cadastro em @Model.DateAdded via @Model.AddType</p>
+
+<button onclick="location.href = '@(Url.Action("Form", "Products", new { id = Model.ID }))'" type="button" class="btn btn-primary">Editar</button>
+<button id="deleteBtn" type="button" class="btn btn-danger">Excluir</button>
+
+
+
+@section Scripts{
+    <environment include="Development">
+        <script src="~/lib/bootbox/bootbox.min.js"></script>
+    </environment>
+
+    <environment exclude="Development">
+        <script src="~/lib/bootbox/bootbox.min.js"></script>
+    </environment>
+    <script>
+    $(document).ready(function () {
+        $("#deleteBtn").on("click", function () {
+            bootbox.confirm("Excluir produto @Model.Name?", function (result) {
+                if (result) {
+                        $.ajax({
+                        url: "/delete/@Model.ID",
+                        method: "DELETE",
+                        success: function () {
+                            location.href = "/";
+                        }
+                    });
+                }
+            });
+        });
+    });
+    </script>
+}

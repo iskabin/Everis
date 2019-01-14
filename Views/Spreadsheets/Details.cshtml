@@ -1,0 +1,40 @@
+﻿@model SpreadsheetEntry
+@{
+    ViewData["Title"] = "Details";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Detalhes da Entrada</h2>
+
+<p>Título: @Model.Title</p>
+<p>Data de Referência: @Model.ReferenceDate</p>
+<p>Cadastro em @Model.DateAdded </p>
+
+@if (Model.Title == null)
+{
+    <h2>Adicione um título à entrada</h2>
+}
+else
+{
+    <h3>Editar Título</h3>
+}
+
+@using (Html.BeginForm("SetTitle", "Spreadsheets"))
+{
+    <div class="form-group">
+        @Html.LabelFor(s => s.Title)
+        @Html.TextBoxFor(s => s.Title, new { @class = "form-control" })
+        @Html.ValidationMessageFor(p => p.Title)
+    </div>
+    @Html.HiddenFor(s => s.ID)
+
+    if (Model.Title == null)
+    {
+        <button type="submit" class="btn btn-primary">Adicionar</button>
+    }
+    else
+    {
+        <button type="submit" class="btn btn-primary">Editar</button>
+    }
+
+}

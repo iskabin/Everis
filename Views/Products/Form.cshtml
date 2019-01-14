@@ -1,0 +1,66 @@
+﻿@model Product
+@{
+    ViewData["Title"] = "Form";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@if (Model == null)
+{
+    <h2>Adicionar Produto</h2>
+}
+else
+{
+    <h2>Editando @Model.Name</h2>
+}
+
+@using (Html.BeginForm("SaveForm", "Products"))
+{
+    <div class="form-group">
+        @Html.LabelFor(p => p.Code)
+        @Html.TextBoxFor(p => p.Code, new { @class = "form-control" })
+        @Html.ValidationMessageFor(p => p.Code)
+    </div>
+    <div class="form-group">
+        @Html.LabelFor(p => p.Name)
+        @Html.TextBoxFor(p => p.Name, new { @class = "form-control" })
+        @Html.ValidationMessageFor(p => p.Name)
+    </div>
+    <div class="form-group">
+        @Html.LabelFor(p => p.Company)
+        @Html.TextBoxFor(p => p.Company, new { @class = "form-control" })
+        @Html.ValidationMessageFor(p => p.Company)
+    </div>
+    <div class="form-group">
+        @Html.LabelFor(p => p.Income)
+        @Html.TextBoxFor(p => p.Income, new { @class = "form-control" })
+        @Html.ValidationMessageFor(p => p.Income)
+    </div>
+    <div class="form-group">
+        @Html.LabelFor(p => p.Outcome)
+        @Html.TextBoxFor(p => p.Outcome, new { @class = "form-control" })
+        @Html.ValidationMessageFor(p => p.Outcome)
+    </div>
+    <div class="form-group">
+        @Html.LabelFor(p => p.Stock)
+        @Html.TextBoxFor(p => p.Stock, new { @class = "form-control" })
+        @Html.ValidationMessageFor(p => p.Stock)
+    </div>
+    @Html.HiddenFor(p => p.ID)
+    @Html.AntiForgeryToken()
+    @if (Model == null)
+    {
+        <button type="submit" class="btn btn-primary">Adicionar</button>
+    }
+    else
+    {
+        <button type="submit" class="btn btn-primary">Editar</button>
+    }
+}
+
+<environment include="Development">
+    <script src="~/lib/jquery-validation/dist/jquery.validate.js"></script>
+</environment>
+
+<environment exclude="Development">
+    <script src="~/lib/jquery-validation/dist/jquery.validate.js"></script>
+</environment>
